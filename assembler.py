@@ -3,11 +3,12 @@ import sys
 '''
 
 This is a very basic assembler which takes a text file as input and ouputs the binary version to another file
+
 supports line comments prefixed with '/', it also ignores anything past the instruction
 
-it does not support any error handling besides basic syntax
+supports labels, so long as they are on the same line as an instruction
 
-I believe it is only python3 compatible since it uses match statements
+it does not support any error handling besides very basic syntax
 
 to use:
 	python3 assembler.py [input file] [output file]
@@ -91,6 +92,7 @@ for line in f:
 
 		if(opcode == 0 or opcode == 14 or opcode == 15):
 			print("{:016b}".format(opcode<<12))
+			of.write("{:016b}\n".format(opcode<<12))
 
 		# Handles add through cmp, and Memory Instructions
 		elif((opcode >= 0 and opcode <= 7) or opcode >= 12):
@@ -103,6 +105,7 @@ for line in f:
 			if(words[i+2][0] == '#'):
 				immediate = int(words[i+2][1:len(words[i+2])])
 				print("{:04b}_1_{:03b}_{:08b}".format(opcode,reg1,immediate))
+				of.write("{:04b}_1_{:03b}_{:08b}\n".format(opcode,reg1,immediate))
 			# handle R-type with offset
 			elif(words[i+2][0] == '('):
 				close_index = words[i+2].find(')')
@@ -116,6 +119,7 @@ for line in f:
 					print("Invalid Register instruction #: " + lineNumber)
 					exit()
 				print("{:04b}_0_{:03b}_{:03b}_{:05b}".format(opcode,reg1,reg2,offset))
+				of.write("{:04b}_0_{:03b}_{:03b}_{:05b}\n".format(opcode,reg1,reg2,offset))
 			else:
 				reg2 = words[i+2][0:len(words[i+2])]
 				reg2 = registers.get(reg2, -1)
@@ -123,6 +127,7 @@ for line in f:
 					print("Invalid Register instruction #: " + lineNumber)
 					exit()
 				print("{:04b}_0_{:03b}_{:03b}_00000".format(opcode,reg1,reg2))
+				of.write("{:04b}_0_{:03b}_{:03b}_00000\n".format(opcode,reg1,reg2))
 
 		# Handle Branch Instructions
 		#elif(opcode >= 8 and opcode <= 11):
@@ -139,6 +144,7 @@ for line in f:
 					print("Invalid Register instruction #: " + lineNumber)
 					exit()
 				print("{:04b}_1_{:03b}_{:08b}".format(opcode,reg1,immediate))
+				of.write("{:04b}_1_{:03b}_{:08b}\n".format(opcode,reg1,immediate))
 			elif(words[i+1][0] == '#'):
 				address = words[i+1][1:len(words[i+1])]
 				if(labels.get(address, -1) == -1):
@@ -146,6 +152,7 @@ for line in f:
 				else:
 					address = labels.get(address)
 				print("{:04b}_0_{:011b}".format(opcode,address))
+				of.write("{:04b}_0_{:011b}\n".format(opcode,address))
 			else:
 				reg1 = words[i+1]
 				reg1 = registers.get(reg1, -1)
@@ -153,6 +160,7 @@ for line in f:
 					print("Invalid Register instruction #: " + lineNumber)
 					exit()
 				print("{:04b}_1_{:03b}_{:08b}".format(opcode,reg1,0))
+				of.write("{:04b}_1_{:03b}_{:08b}\n".format(opcode,reg1,0))
 
 		# only update line number if instruction is present
 		lineNumber+=1 
