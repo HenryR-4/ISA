@@ -110,7 +110,11 @@ for line in f:
 					exit()
 				# handle I-type
 				if(words[i+2][0] == '#'):
-					immediate = int(words[i+2][1:len(words[i+2])])
+					immediate = words[i+2][1:len(words[i+2])]
+					if(labels.get(immediate, -1) == -1):
+						immediate = int(immediate)
+					else:
+						immediate = labels.get(immediate)
 					if(immediate < 0):
 						immediate = immediate & 0x00FF 
 					program_str += "{:04b}_1_{:03b}_{:08b}\n".format(opcode,reg1,immediate)
