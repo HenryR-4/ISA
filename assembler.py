@@ -12,8 +12,7 @@ it does not support any error handling besides very basic syntax
 it supports a optional data section at the top, use a tag called "start" at the program
 entry point if you include data otherwise it is not required
 
-first line of the output will always be the address of the start tag which the pc
-is set to at the start of the program
+first line of the output will be a branch to the address of the start tag
 
 to use:
 	python3 assembler.py [input file] [output file]
@@ -182,6 +181,6 @@ for line in f:
 		lineNumber+=1 
 
 print(labels)
-program_str = "{:016b}\n".format(labels.get("start")) + program_str
+program_str = "1000_0_{:011b}\n".format(labels.get("start")) + program_str
 print(program_str)
 of.write(program_str)
