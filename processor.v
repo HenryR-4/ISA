@@ -3,23 +3,23 @@
 `define reg2   instruction[7:5]
 `define Im     instruction[11]
 `define pc     registers[0]
-module processor(input clk, rst, input[15:0] instruction, data_in, output[15:0] program_address, address, data_out, output mem_w)
+module processor(input clk, rst, input[15:0] instruction, data_in, output[15:0] program_address, data_address, output reg[15:0] data_out, output reg mem_w);
 
     reg[15:0] registers[0:7]; // register file
 
     reg[2:0] sr; // 3 bit status register
 
     // control signals
-    wire br, hlt, reg_w, mem_r;
+    reg br, hlt, reg_w, mem_r;
 
     // sign extended values
     wire[15:0] immediate, offset, address;
-    assign immediate = { 8{instruction[7]}, instruction[7:0]};
-    assign offset = {11{instruction[4]}, instruction[4:0]};
+    assign immediate = {{8{instruction[7]}}, instruction[7:0]};
+    assign offset = {{11{instruction[4]}}, instruction[4:0]};
     assign address = {5'b0, instruction[10:0]};
 
     // other internal signals
-    wire[15:0] next_pc;
+    reg[15:0] next_pc;
     wire[15:0] op2; // second operand to alu, first is always reg1
     wire[15:0] reg_in; // input to regfile
 
@@ -33,7 +33,7 @@ module processor(input clk, rst, input[15:0] instruction, data_in, output[15:0] 
         begin
             // clear all registers to 0
             `pc <= 16'b0; // setting pc = 0 will release from halt, assuming first instruction isn't a halt
-            registers[1] <= 16'b0;
+            registers[1] <= 16'd999; // set stack pointer to highest mem address at reset
             registers[2] <= 16'b0;
             registers[3] <= 16'b0;
             registers[4] <= 16'b0;
@@ -61,66 +61,84 @@ module processor(input clk, rst, input[15:0] instruction, data_in, output[15:0] 
     end
     
     assign program_address = `pc; // instruction address
-    assign address = `Im ? immediate : (registers[`reg2] + offset); // address for mem instructions
+    assign data_address = `Im ? immediate : (registers[`reg2] + offset); // address for mem instructions
 
     always @*
     begin
         // control signals
         case(`opcode)
             0: // halt
+			begin
                 mem_w = 0;
                 mem_r = 0;
                 reg_w = 0;
                 br = 0;
                 hlt = 1;
+			end
             1,2,3,4,5,6: // ALU operations
+			begin
                 mem_w = 0;
                 mem_r = 0;
                 reg_w = 1;
                 br = 0;
                 hlt = 0;
+			end
             8: // b
+			begin
                 mem_w = 0;
                 mem_r = 0;
                 reg_w = 0;
                 br = 1;
                 hlt = 0;
+			end
             9: // be
-                mem_w = 0;
-                mem_r = 0;
-                reg_w = 0;
-                br = sr[0];
-                hlt = 0;
-            10: // bl
-                mem_w = 0;
-                mem_r = 0;
-                reg_w = 0;
-                br = sr[1];
-                hlt = 0;
-            11: // bg
+			begin
                 mem_w = 0;
                 mem_r = 0;
                 reg_w = 0;
                 br = sr[2];
                 hlt = 0;
+			end
+            10: // bl
+			begin
+                mem_w = 0;
+                mem_r = 0;
+                reg_w = 0;
+                br = sr[1];
+                hlt = 0;
+			end
+            11: // bg
+			begin
+                mem_w = 0;
+                mem_r = 0;
+                reg_w = 0;
+                br = sr[0];
+                hlt = 0;
+			end
             12: // lw
+			begin
                 mem_w = 0;
                 mem_r = 1;
                 reg_w = 1;
                 br = 0;
                 hlt = 0;
+			end
             13: // sw
+			begin
                 mem_w = 1;
                 mem_r = 0;
                 reg_w = 0;
                 br = 0;
                 hlt = 0;
+			end
             default: // cmp and nop
+			begin
                 mem_w = 0;
                 mem_r = 0;
                 reg_w = 0;
                 br = 0;
                 hlt = 0;
+			end
         endcase
 
         // branch and halt control
@@ -138,7 +156,7 @@ module processor(input clk, rst, input[15:0] instruction, data_in, output[15:0] 
         case(`opcode)
             1: // add
                 data_out = registers[`reg1] + op2;
-            2: // sub
+            2,7: // sub
                 data_out = registers[`reg1] - op2;
             3: // and
                 data_out = registers[`reg1] & op2;

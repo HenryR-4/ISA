@@ -15,7 +15,14 @@ entry point if you include data otherwise it is not required
 first line of the output will be a branch to the address of the start tag
 
 to use:
-	python3 assembler.py [input file] [output file]
+	python3 assembler.py [input file] <optional 'N' to prevent printing>
+
+example:
+	python3 assembler.py example_program
+or
+	python3 assembler.py example_program N
+
+always outputs to program.txt because that is what the testbench will read
 
 '''
 
@@ -60,7 +67,11 @@ filename = sys.argv[1]
 print("Processing " + filename)
 f = open(filename, "r")
 
-outputfile = sys.argv[2]
+prnt = 1;
+if(len(sys.argv) > 2 and sys.argv[2] == "N"):
+	prnt = 0;
+
+outputfile = "program.txt"
 print("Outputing to " + outputfile)
 of = open(outputfile, "w")
 
@@ -180,7 +191,8 @@ for line in f:
 		# only update line number if instruction is present
 		lineNumber+=1 
 
-print(labels)
 program_str = "1000_0_{:011b}\n".format(labels.get("start")) + program_str
-print(program_str)
+if(prnt):
+	print(labels)
+	print(program_str)
 of.write(program_str)
