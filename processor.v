@@ -68,77 +68,77 @@ module processor(input clk, rst, input[15:0] instruction, data_in, output[15:0] 
         // control signals
         case(`opcode)
             0: // halt
-			begin
+            begin
                 mem_w = 0;
                 mem_r = 0;
                 reg_w = 0;
                 br = 0;
                 hlt = 1;
-			end
+            end
             1,2,3,4,5,6: // ALU operations
-			begin
+            begin
                 mem_w = 0;
                 mem_r = 0;
                 reg_w = 1;
                 br = 0;
                 hlt = 0;
-			end
+            end
             8: // b
-			begin
+            begin
                 mem_w = 0;
                 mem_r = 0;
                 reg_w = 0;
                 br = 1;
                 hlt = 0;
-			end
+            end
             9: // be
-			begin
+            begin
                 mem_w = 0;
                 mem_r = 0;
                 reg_w = 0;
                 br = sr[2];
                 hlt = 0;
-			end
+            end
             10: // bl
-			begin
+            begin
                 mem_w = 0;
                 mem_r = 0;
                 reg_w = 0;
                 br = sr[1];
                 hlt = 0;
-			end
+            end
             11: // bg
-			begin
+            begin
                 mem_w = 0;
                 mem_r = 0;
                 reg_w = 0;
                 br = sr[0];
                 hlt = 0;
-			end
+            end
             12: // lw
-			begin
+            begin
                 mem_w = 0;
                 mem_r = 1;
                 reg_w = 1;
                 br = 0;
                 hlt = 0;
-			end
+            end
             13: // sw
-			begin
+            begin
                 mem_w = 1;
                 mem_r = 0;
                 reg_w = 0;
                 br = 0;
                 hlt = 0;
-			end
+            end
             default: // cmp and nop
-			begin
+            begin
                 mem_w = 0;
                 mem_r = 0;
                 reg_w = 0;
                 br = 0;
                 hlt = 0;
-			end
+            end
         endcase
 
         // branch and halt control

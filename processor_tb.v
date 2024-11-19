@@ -21,7 +21,7 @@ assign instr_data = memory[program_addr];
 
 initial 
 begin
-	clk = 0;
+    clk = 0;
     rst = 0;
     $readmemb("program.txt", memory); // read in program to memory
     @(posedge clk) #1;
