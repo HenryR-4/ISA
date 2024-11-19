@@ -154,19 +154,19 @@ module processor(input clk, rst, input[15:0] instruction, data_in, output[15:0] 
 
         // alu operations
         case(`opcode)
-            1: // add
+            1:   // add
                 data_out = registers[`reg1] + op2;
-            2,7: // sub
+            2,7: // sub, cmp
                 data_out = registers[`reg1] - op2;
-            3: // and
+            3:   // and
                 data_out = registers[`reg1] & op2;
-            4: // or
+            4:   // or
                 data_out = registers[`reg1] | op2;
-            5: // lsl
+            5:   // lsl
                 data_out = registers[`reg1] << op2;
-            6: // mov
+            6:   // mov
                 data_out = op2;
-            13: // sw
+            13:  // sw
                 data_out = registers[`reg1];
             default:
                 data_out = 0;
