@@ -1,4 +1,4 @@
-		sub sp #3 // allocate space on stack
+        sub sp #3 // allocate space on stack
 
         mov r2 #3       // a = 3
         sw  r2 (2)sp    // push a to stack
