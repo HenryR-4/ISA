@@ -1,0 +1,41 @@
+    // push used registers to stack
+    // using 2 registers 1 for each operand
+func    sub sp #2
+        sw  r4 (1)sp
+        sw  r5 sp
+
+        // get arguments and do operation
+        lw  r4 (4)sp // r4 = a
+        lw  r5 (3)sp // r5 = b
+
+        // put return value in register 7
+        mov r7 r4   // r7 = a
+        add r7 r5   // r7 = a+b
+        
+        // pop registers from stack
+        lw  r5 sp
+        lw  r4 (1)sp
+        add sp #2
+
+        lw  pc sp // return
+
+    // passing 2 parameters + return address
+start   sub sp #3 // allocate space on stack
+
+        mov r2 #3       // a = 3
+        sw  r2 (2)sp    // push a to stack
+
+        mov r3 #6       // b = 6
+        sw  r3 (1)sp    // push b to stack
+        
+        // can use mov to easily acquire 
+        // return address
+        mov r4 (3)pc // pc+3 = return address
+        sw  r4 sp // pc + 1
+        b   #func // pc + 2
+        sub sp #1 // pc + 3, return location
+            // deallocate return address
+
+        // r7 now holds return value of func
+
+        halt
