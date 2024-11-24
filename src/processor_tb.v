@@ -13,7 +13,7 @@ always #10 clk = ~clk; // generate clk signal
 
 //1k word memory block
 reg[15:0] memory[0:999]; 
-always @ (posedge mem_w) begin memory[data_addr] = data_out; end
+always @ (posedge clk) begin if(mem_w) memory[data_addr] = data_out; end
 
 
 assign mem_data = memory[data_addr];
@@ -21,7 +21,7 @@ assign instr_data = memory[program_addr];
 
 initial 
 begin
-    clk = 0;
+	clk = 0;
     rst = 0;
     $readmemb("program.txt", memory); // read in program to memory
     @(posedge clk) #1;
