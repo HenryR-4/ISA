@@ -1,6 +1,6 @@
 ### ISA Overview
 
-![ISA Overview](/img/overview.png)
+![ISA Overview](img/overview.png)
 
 ### Assembler Instructions
 ```
