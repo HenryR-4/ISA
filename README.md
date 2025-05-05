@@ -1,5 +1,7 @@
 ### ISA Overview
 
+![ISA Overview](/img/overview.png)
+
 ### Assembler Instructions
 ```
 python3 assembler.py [input file] <optional 'N'>
